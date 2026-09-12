@@ -106,6 +106,10 @@ def _priced_hourly(
 # (statistic_id, display name, unit, hour start -> value)
 _Series = tuple[str, str, str, dict[datetime, float]]
 
+# The recorder wants to know which converter a unit belongs to so it can offer
+# the statistic in other units. Money has no converter.
+_UNIT_CLASS = {UnitOfEnergy.KILO_WATT_HOUR: "energy"}
+
 
 async def async_import(
     hass: HomeAssistant,
@@ -210,6 +214,7 @@ async def _async_write(hass: HomeAssistant, series: list[_Series]) -> int:
                 source=DOMAIN,
                 statistic_id=statistic_id,
                 unit_of_measurement=unit,
+                unit_class=_UNIT_CLASS.get(unit),
             ),
             points,
         )
